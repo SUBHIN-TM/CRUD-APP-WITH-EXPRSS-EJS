@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= user?'modify Page':pageTitle %>
+    </title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .heading {
+            text-align: center;
+            font-style: italic;
+            font-weight: 900;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            margin: 20px 0;
+
+        }
+
+        .userArea {
+            width: 100%;
+            height: auto;
+            border-top: 1px solid black;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+
+        .left,
+        .right {
+
+            display: flex;
+            flex-direction: column;
+            margin-right: 250px;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+
+        .box {
+            margin: 10px 100px;
+        }
+
+        .submit {
+            margin-left: 708px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        /* input[type="text" ] {
+        color: aqua;
+        } */
+
+        ::placeholder {
+            font-size: 10px;
+            padding-left: 5px;
+        }
+
+        #errorDisplay {
+            text-align: center;
+            margin: 33px 0;
+            color: red;
+        }
+
+        #booking {
+            margin-left: 692px;
+            padding: 8px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 class="heading">ROYAL ENFIELD SERVICE BOOKING</h1>
+
+    <div class="userArea">
+        <!-- LEFT SIDE  -->
+        <div class="left">
+            <h4 id="bookingId"><%=user?user.id:"" %>
+            </h4><br>
+            <div class="box">
+                <label for="firstName">First Name : </label>
+                <input placeholder="Must Have At least 3 Letters" type="text" name="firstName" id="firstName"
+                    value="<%= user?user.firstName:"" %>">
+                    <br><small style="color: red;" id="firstNameError"></small>
+            </div>
+
+            <div class="box">
+                <label for="mobileNumber">Mobile Number : </label>
+                <input placeholder="Valid Mobile Number Required" type="number" name="mobileNumber" id="mobileNumber"
+                    value="<%= user?user.mobileNumber:"" %>">
+                    <br><small style="color: red;" id="mobileNumberError"></small>
+            </div>
+            <div class="box">
+                <label for="modelName">Model Name : </label>
+                <select name="modelName" id="modelName">
+                    <option value="CLASSIC 350">CLASSIC 350</option>
+                    <option value="STANDARD 350" <%=user && user.modelName==="STANDARD 350" ? "selected" : "" %>
+                        >STANDARD 350</option>
+                    <option value="METEOR 350" <%=user && user.modelName==="METEOR 350" ? "selected" : "" %>>METEOR 350
+                    </option>
+                    <option value="THUNDER BIRD 350" <%=user && user.modelName==="THUNDER BIRD 350" ? "selected" : "" %>
+                        >THUNDER BIRD 350</option>
+                    <option value="HIMALAYAN" <%=user && user.modelName==="HIMALAYAN" ? "selected" : "" %>>HIMALAYAN
+                    </option>
+                </select>
+            </div>
+            <div class="box">
+                <label for="chooseDate">Choose Date : </label>
+                <input type="date" name="chooseDate" id="chooseDate" value="<%= user?user.chooseDate:"" %>">
+                <br><small style="color: red;" id="chooseDateError"></small>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE  -->
+        <div class="right">
+            <div class="box">
+                <label for="lastName">Last Name : </label>
+                <input placeholder="Must Have At least 1 Letter" type="text" name="lastName" id="lastName"
+                    value="<%= user?user.lastName:"" %>">
+                    <br><small style="color: red;" id="lastNameError"></small>
+            </div>
+
+            <div class="box">
+                <label for="emailId">Email Id : </label>
+                <input placeholder="Valid Email ID Required" type="email" name="emailId" id="emailId"
+                    value="<%= user?user.emailId:"" %>">
+                    <br><small style="color: red;" id="emailError"></small>
+            </div>
+            <div class="box">
+                <label for="serviceType">Service Type : </label>
+                <select name="serviceType" id="serviceType">
+                    <option value="FREE SERVICE" <%=user && user.serviceType==="FREE SERVICE" ? "selected" : "" %>>FREE
+                        SERVICE</option>
+                    <option value="PAID SERVICE" <%=user && user.serviceType==="PAID SERVICE" ? "selected" : "" %>>PAID
+                        SERVICE</option>
+                </select>
+            </div>
+
+        </div>
+
+
+
+    </div>
+    <h3 style="color: red;" id="errorDisplay"></h3>
+
+
+
+    <input id="submit" class="submit" type="button" value="<%= user?" MODIFY" :'Submit' %>" > <br>
+
+    <input id="booking" class="booking" type="button" value="Booking History"
+        onclick="(() =>  window.location.href = '/tableView')()">
+
+
+    <!-- TABLE SECTION  -->
+
+
+
+
+
+    <script>
+
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const submitButton = document.querySelector("#submit")
+
+            submitButton.addEventListener('click', () => {
+
+                let firstName = document.querySelector("#firstName").value.toUpperCase()
+                let lastName = document.querySelector("#lastName").value.toUpperCase()
+                let mobileNumber = document.querySelector("#mobileNumber").value
+                let emailId = document.querySelector("#emailId").value
+                let modelName = document.querySelector("#modelName").value
+                let serviceType = document.querySelector("#serviceType").value
+                let chooseDate = document.querySelector("#chooseDate").value
+                let id = 0;
+
+
+                //MAKE A VARIABLE TO CONTAIN EACH FORM TRUE
+                let isFirstNameValid = firstName.length >= 2 && firstName.trim() !== "" && isNaN(firstName);//REMOVE WHITE SPACE AND GIVE A STRING AND THAT REMAIN STRING SHOULD NOT EMPTY
+                let isLastNameValid = lastName.length >= 1 && lastName.trim() !== ""  && isNaN(lastName);
+                let isMobileNumberValid = /^\d{10}$/.test(mobileNumber);;
+                let isEmailIdValid = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(emailId); // Basic email format
+                let isModelNameValid = modelName !== "";
+                let isServiceTypeValid = serviceType !== "";
+                let isChooseDateValid = /^\d{4}-\d{2}-\d{2}$/.test(chooseDate)
+
+
+
+                if (!isFirstNameValid || !isLastNameValid || !isMobileNumberValid || !isModelNameValid || !isServiceTypeValid || !isChooseDateValid) {
+                    document.querySelector("#errorDisplay").innerHTML = "PLEASE COMPLETE THE FORM CORRECTLY"
+
+                    if(!isFirstNameValid){
+                        document.querySelector("#firstNameError").innerHTML="Minimum 2 Letters Required "
+                    }else{
+                        document.querySelector("#firstNameError").innerHTML=""
+                    }
+                    if(!isLastNameValid){
+                        document.querySelector("#lastNameError").innerHTML="Minimum 1 Letter Required"
+                    }else{
+                        document.querySelector("#lastNameError").innerHTML=""
+                    }
+                    if(!isMobileNumberValid){
+                        document.querySelector("#mobileNumberError").innerHTML="10 Digits Required"
+                    }else{
+                        document.querySelector("#mobileNumberError").innerHTML=""
+                    }if(!isChooseDateValid){
+                        document.querySelector("#chooseDateError").innerHTML="Choose The Correct Date"
+                    }else{
+                        document.querySelector("#chooseDateError").innerHTML=""
+                    }
+                   if(!isEmailIdValid){
+                    document.querySelector("#emailError").innerHTML="Proper Email ID Required"
+                   }else{
+                    document.querySelector("#emailError").innerHTML=""
+                   }
+
+
+
+
+
+
+
+                } else {
+
+                    if (submitButton.value === 'Submit') {
+
+                        document.querySelector("#errorDisplay").innerHTML = ""
+                        //   ASSIGNING THESE VALUES TO A OBJECT 
+                        const userData = {
+                            id,
+                            firstName,
+                            lastName,
+                            mobileNumber,
+                            emailId,
+                            modelName,
+                            serviceType,
+                            chooseDate
+
+
+                        }
+                        // SENDING POST RQST TO SERVER 
+                        fetch('/submit', {
+                            method: 'POST',
+                            headers: {
+                                // DATA IS SEND AS A JSON
+                                'Content-Type': 'application/json',
+                            },
+                            // CONVERTED OBJECT TO JSON STRING 
+                            body: JSON.stringify(userData) //NOW THIS BODY CONTAIN MY WHOLE DATA IN JSON FORMAT
+                        })
+                            //NOW WE REQUETED TO POST THIS IN TO SERVER NOW THE SERVER WILL RESPOND
+                            //SO WE MAKE SURE THE DATA SENT SUCCESSFULLY TO SERVER
+                            //WE KNOW WHILE USE FETCH,SERVER WRITEEN AS PROMISE 
+                            .then(response => {
+                                if (response.status === 200) {
+                                    console.log(response.statusText);
+                                } else {
+                                    //STATS =404,500 ETC  ,STS TEXT=NOT FOUND ,ERROR ,ETC
+                                    console.error("There is an error occured from the server", response.status, response.statusText)
+                                }
+                            })
+
+                        window.location.href = '/tableView' //THE PAGE RENDER TO TABLE VIEW
+
+                    }
+
+                    else {
+                        let bookingId = document.querySelector("#bookingId").textContent;
+
+                        // CREATED NEW OBJECT TO SEND TO SERVER TO REPLACE OR MODIFY
+                        const updatedUserData = {
+                            id:bookingId,
+                            firstName,
+                            lastName,
+                            mobileNumber,
+                            emailId,
+                            modelName,
+                            serviceType,
+                            chooseDate
+                        };
+                            // alert(`${firstName}, ${lastName}, ${mobileNumber}, ${emailId}, ${modelName}, ${serviceType}, ${chooseDate},${id},${bookingId}`);
+
+                        //SEND PUT REQUEST TO URL /MODIFYUSER
+                        fetch(`/modifyUser/ `+ bookingId, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(updatedUserData),//CONVERTED TO JSON FORMAT
+                        })
+                            .then(response => { //NOW DATA MODIFIED AND SERVER GIVE THE RESPONSE
+                                if (response.status === 200) {
+                                    console.log('User data updated successfully.');
+                                    alert("USER DATA MODIFIED")
+                                    window.location.href = '/tableView'//JUST RELOADED THE TABLE PAGE
+
+                                } else {
+                                    console.log('Error updating user data:', response.status, response.statusText);
+                                }
+                            });
+
+                    }
+
+                } 
+
+            })
+
+        })
+
+
+
+    </script>
+</body>
+
+</html>

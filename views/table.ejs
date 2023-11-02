@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table</title>
+    <style>
+         table,th,tr,td{
+            border-collapse: collapse;
+            border: 3px solid rgb(162, 159, 159);
+            padding: 10px;
+        }
+        th,tr{
+            padding: 27px;
+        }
+        .homeBtn{
+            margin-left: 1232px;
+            margin-top: 20px;
+            padding: 10px 20px;
+        }
+        
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+        <tr>
+           <th>Booking Id</th>
+           <th>First Name </th>
+           <th>Last Name</th>
+           <th>Moble Number</th>
+           <th>Email ID</th>
+           <th>Model Name</th>
+           <th>Service Type</th>
+           <th>Choosen Date</th>
+           <th>Action</th>
+
+        </tr>
+    </thead>
+    <tbody id="userData"></tbody>
+
+    </table>
+    <button class="homeBtn" onclick="home()" >HOME</button>
+
+    <script>
+        fetch('userData',{
+            method :'GET'
+        })
+        .then(response => response.json())//BODY CONTAIN json it read as js OBJECT NOW
+        .then(data => {
+            const userDataTable=document.querySelector("#userData");
+
+            data.forEach(object => { //DATA CONTAIN WHOLE DATA ADN OBJECT AS EACH OBJECT NOW W CAN SELECT OBJECT. TO INSEIDE PROPERTIES
+                const newRowCreated=document.createElement('tr');
+                newRowCreated.innerHTML=
+                `
+                <td>${object.id}</td>
+                <td>${object.firstName}</td>
+                <td>${object.lastName}</td>
+                <td>${object.mobileNumber}</td>
+                <td>${object.emailId}</td>
+                <td>${object.modelName}</td>
+                <td>${object.serviceType}</td>
+                <td>${object.chooseDate}</td>
+
+                <td><button onclick="modifyUserPage(${object.id})">MODIFY</button>
+                    <button onclick="deleteUser(${object.id})" >DELETE</button>
+                    </td>
+                `;
+                userDataTable.appendChild(newRowCreated)
+                
+            });
+
+
+        })
+
+        .catch(error => console.error("error in geting the data"))
+
+
+
+
+        //MODIFY FUNCTION
+        function modifyUserPage(userId){
+            window.location.href = '/modifyUserPage/' + userId;
+        }
+
+
+    //DELETING FUNCTION
+        function deleteUser(userId) {
+            fetch('/deleteUser/' + userId,{//PASSED ID NUMBER IN DELETE METHORD,WE CAN ALSO PASS ID LIKE THIS
+            method:'DELETE'      
+
+            })
+            .then(response => {
+                if(response.status==200){
+                    alert("User Details Successfully DELETED")
+                      window.location.href='/tableView'
+                }else {
+                    console.log("error to delete,bad response");
+                }
+                
+            })
+            
+        }
+
+        function home() { //ADDED A BUTTON TO GO HOME
+            window.location.href='/'
+            
+        }
+
+
+</script>
+
+</body>
+</html>
+
