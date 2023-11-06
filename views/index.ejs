@@ -83,8 +83,7 @@
     <div class="userArea">
         <!-- LEFT SIDE  -->
         <div class="left">
-            <h4 id="bookingId"><%=user?user.id:"" %>
-            </h4><br>
+            <h4 id="bookingId"><%=user?user.id:""%></h4><br>
             <div class="box">
                 <label for="firstName">First Name : </label>
                 <input placeholder="Must Have At least 3 Letters" type="text" name="firstName" id="firstName"
@@ -186,8 +185,8 @@
 
 
                 //MAKE A VARIABLE TO CONTAIN EACH FORM TRUE
-                let isFirstNameValid = firstName.length >= 2 && firstName.trim() !== "" && isNaN(firstName);//REMOVE WHITE SPACE AND GIVE A STRING AND THAT REMAIN STRING SHOULD NOT EMPTY
-                let isLastNameValid = lastName.length >= 1 && lastName.trim() !== ""  && isNaN(lastName);
+                let isFirstNameValid =  /^[A-Za-z]+$/.test(firstName) && firstName.length >= 3;//REMOVE WHITE SPACE AND GIVE A STRING AND THAT REMAIN STRING SHOULD NOT EMPTY
+                let isLastNameValid =/^[A-Za-z]+$/.test(lastName) && lastName.length >= 1 ;
                 let isMobileNumberValid = /^\d{10}$/.test(mobileNumber);;
                 let isEmailIdValid = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(emailId); // Basic email format
                 let isModelNameValid = modelName !== "";
@@ -200,12 +199,12 @@
                     document.querySelector("#errorDisplay").innerHTML = "PLEASE COMPLETE THE FORM CORRECTLY"
 
                     if(!isFirstNameValid){
-                        document.querySelector("#firstNameError").innerHTML="Minimum 2 Letters Required "
+                        document.querySelector("#firstNameError").innerHTML="Minimum 3 Letters Required /Avoid Speacial Characters "
                     }else{
                         document.querySelector("#firstNameError").innerHTML=""
                     }
                     if(!isLastNameValid){
-                        document.querySelector("#lastNameError").innerHTML="Minimum 1 Letter Required"
+                        document.querySelector("#lastNameError").innerHTML="Letter Required/Avoid Speacial Characters"
                     }else{
                         document.querySelector("#lastNameError").innerHTML=""
                     }
@@ -269,13 +268,15 @@
                                     console.error("There is an error occured from the server", response.status, response.statusText)
                                 }
                             })
+                            .catch(error => console.error("error in geting the from respone"))
 
                         window.location.href = '/tableView' //THE PAGE RENDER TO TABLE VIEW
 
                     }
 
                     else {
-                        let bookingId = document.querySelector("#bookingId").textContent;
+                        let bookingId = parseInt(document.querySelector("#bookingId").textContent)
+                        // alert(bookingId)
 
                         // CREATED NEW OBJECT TO SEND TO SERVER TO REPLACE OR MODIFY
                         const updatedUserData = {
@@ -288,7 +289,7 @@
                             serviceType,
                             chooseDate
                         };
-                            // alert(`${firstName}, ${lastName}, ${mobileNumber}, ${emailId}, ${modelName}, ${serviceType}, ${chooseDate},${id},${bookingId}`);
+                            // alert(`${bookingId}`);
 
                         //SEND PUT REQUEST TO URL /MODIFYUSER
                         fetch(`/modifyUser/ `+ bookingId, {
@@ -296,7 +297,7 @@
                             headers: {
                                 'Content-Type': 'application/json',
                             },
-                            body: JSON.stringify(updatedUserData),//CONVERTED TO JSON FORMAT
+                            body: JSON.stringify(updatedUserData)//CONVERTED TO JSON FORMAT
                         })
                             .then(response => { //NOW DATA MODIFIED AND SERVER GIVE THE RESPONSE
                                 if (response.status === 200) {

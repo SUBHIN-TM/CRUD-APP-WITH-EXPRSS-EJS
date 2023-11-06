@@ -4,11 +4,11 @@ const path = require('path')
 const ejs = require('ejs')
 const fs = require('fs')
 const bodyParser = require('body-parser')//INCM REQ JSON FILE (JSON STRING) FORMAT CONVERT TO THE JS OBJECT.ITS ALSO A MIDDLE WARE FOR PARSING DATA
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
+
 app.use(bodyParser.json())//THIS MIDDLEWARE HANDLES ALL INCMING JSON REQ PARSE TO JS OBJECT
+
 app.set('view engine', 'ejs'); //VIEW ENGINE SET
-
-
 //SETTING INITIAL HOME PAGE
 app.set('views', path.join(__dirname, 'views')); //set the view index directory
 
@@ -184,10 +184,11 @@ app.get('/modifyUserPage/:id',(req,res) => {
 
 // UPDATE/MODIFY METHORD BY RECIEVING UPDATED DATA
 app.put(`/modifyUser/:id`, (req, res) => {
-    const userId = parseInt(req.params.id);
+    const userId = parseInt(req.params.id, 10);
     console.log("THE ID NUMBER TO MODIFY", userId);
     const recievedData = req.body//NOW WE  GOT THE DATA FROM REQUEST 
     console.log("RECIEVED DATA TO MODIFY" + recievedData);
+    console.log(recievedData.id,recievedData.firstName,recievedData.lastName,recievedData.firstName);
 
     //FIND WHICH OBJECT TO BE REPLACED BY SEARCHING RECIEVED ID
     fs.readFile('data.json', (err, data) => {
@@ -202,7 +203,7 @@ app.put(`/modifyUser/:id`, (req, res) => {
                     existingData[index] = recievedData;
 
                     //NOW EXISTING DATA MODIFIED,NEED TO WRITE THIS IN OUR DATA BASE
-                    fs.writeFile('data.json', JSON.stringify(existingData), writeError => {
+                    fs.writeFile('data.json', JSON.stringify(existingData, null,2), writeError => {
                         if (writeError) {
                             console.error("error in writing data json");
                             res.status(500).send(`error in writing data json`)
